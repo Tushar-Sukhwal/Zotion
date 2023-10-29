@@ -4,8 +4,12 @@ import { useScrollTop } from "@/hooks/use-scroll-top";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { ModeToggle } from "@/components/mode-toggle";
+import { useConvexAuth } from "convex/react";
+import { SignInButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
 
 export const Navbar = () => {
+  const { isAuthenticated, isLoading } = useConvexAuth();
   //scrolled is a boolean (if the user has scrolled it will make the navbar-border visible)
   const scrolled = useScrollTop();
   return (
@@ -17,7 +21,20 @@ export const Navbar = () => {
     >
       <Logo />{" "}
       <div className="md:ml-auto md:justify-end justify-between w-full flex items-center gap-x-2 ">
-        <ModeToggle /> 
+        {isLoading && <p>Loading...</p>}
+        {!isAuthenticated && !isLoading && (
+          <>
+            <SignInButton mode="modal">
+              <Button variant="ghost" size="sm">
+                Log in
+              </Button>
+            </SignInButton>
+            <SignInButton mode="modal">
+              <Button size="sm">Get Jotion free</Button>
+            </SignInButton>
+          </>
+        )}
+        <ModeToggle />
       </div>
     </div>
   );
