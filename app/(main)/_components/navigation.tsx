@@ -5,6 +5,7 @@ import { ChevronsLeft, MenuIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { ElementRef, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
+import { UserItem } from "./user-item";
 
 export const Navigation = () => {
   const pathname = usePathname();
@@ -16,7 +17,7 @@ export const Navigation = () => {
   const sidebarRef = useRef<ElementRef<"aside">>(null);
   const navbarRef = useRef<ElementRef<"div">>(null);
   const [isResetting, setIsResetting] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(isMobile);
 
   useEffect(() => {
     if (isMobile) {
@@ -24,13 +25,19 @@ export const Navigation = () => {
     } else {
       resetWidth();
     }
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (isMobile) {
+      collapse();
+    }
   }, [isMobile, pathname]);
 
   const handleMouseDown = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     event.preventDefault();
-    event?.stopPropagation();
+    event.stopPropagation();
 
     isResizingRef.current = true;
     document.addEventListener("mousemove", handleMouseMove);
@@ -65,7 +72,7 @@ export const Navigation = () => {
       setIsCollapsed(false);
       setIsResetting(true);
 
-      sidebarRef.current.style.width = isMobile ? "0" : "240px";
+      sidebarRef.current.style.width = isMobile ? "100%" : "240px";
       navbarRef.current.style.setProperty(
         "width",
         isMobile ? "0" : "calc(100% - 240px)"
@@ -108,7 +115,7 @@ export const Navigation = () => {
           <ChevronsLeft className="w-6 h-6 " />
         </div>
         <div>
-          <p>Action items</p>
+          <UserItem /> 
         </div>
         <div className="mt-4">
           <p>Documents</p>
@@ -127,7 +134,7 @@ export const Navigation = () => {
           isMobile && "left-0 w-full"
         )}
       >
-        <nav>
+        <nav className="bg-transparent px-3 py-2 w-full">
           {isCollapsed && (
             <MenuIcon
               role="button"
