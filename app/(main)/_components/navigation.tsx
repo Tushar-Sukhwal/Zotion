@@ -1,11 +1,16 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { ChevronsLeft, MenuIcon } from "lucide-react";
+import { ChevronsLeft, MenuIcon, PlusCircle, Search, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { ElementRef, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { UserItem } from "./user-item";
+import { Item } from "./item";
+import { useMutation, } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
+import { DocumentList } from "./document-list";
 
 export const Navigation = () => {
   const pathname = usePathname();
@@ -13,12 +18,14 @@ export const Navigation = () => {
   //not using tailwind breakpoints here becuase they are hard to work with in this context
   const isMobile = useMediaQuery("(max-width: 768px)");
 
+  const create = useMutation(api.documents.create);
+
   const isResizingRef = useRef(false);
   const sidebarRef = useRef<ElementRef<"aside">>(null);
   const navbarRef = useRef<ElementRef<"div">>(null);
   const [isResetting, setIsResetting] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(isMobile);
-
+  
   useEffect(() => {
     if (isMobile) {
       collapse();
@@ -26,7 +33,7 @@ export const Navigation = () => {
       resetWidth();
     }
   }, [isMobile]);
-
+  
   useEffect(() => {
     if (isMobile) {
       collapse();
@@ -94,6 +101,17 @@ export const Navigation = () => {
     }
   };
 
+  const handleCreate = () => {
+    const promise = create({title :"Untitled"}) ; 
+
+    toast.promise(promise, {
+      loading: "Creating a new note...",
+      success: "New note created!",
+      error: "Failed to create a new note."
+    })
+  }
+
+
   return (
     <>
       <aside
@@ -115,10 +133,14 @@ export const Navigation = () => {
           <ChevronsLeft className="w-6 h-6 " />
         </div>
         <div>
-          <UserItem /> 
+
+          <UserItem />
+          <Item label="Search" icon={Search} isSearch onClick={() => {}} /> 
+          <Item label="Search" icon={Settings} onClick={() => {}} /> 
+          <Item onClick={handleCreate} label="New Page" icon={PlusCircle} />
         </div>
-        <div className="mt-4">
-          <p>Documents</p>
+        <div className="mt-4">   
+        <DocumentList />
         </div>
         <div
           onMouseDown={handleMouseDown}
