@@ -209,8 +209,28 @@ export const remove = mutation({
       throw new Error("Unauthorized");
     }
 
-    const document = await ctx.db.delete(args.id) ; 
+    const document = await ctx.db.delete(args.id);
 
-    return document ; 
+    return document;
+  },
+});
+
+export const getSearch = query({
+  handler: async (ctx) => {
+    const identitiy = await ctx.auth.getUserIdentity();
+
+    if (!identitiy) {
+      throw new Error("Not authenticated");
+    }
+
+    const userId = identitiy.subject;
+
+    const documents = await ctx.db
+      .query("documents")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter((q) => q.eq(q.field("isArchived"), false))
+      .order("desc")
+      .collect();
+    return documents;
   },
 });

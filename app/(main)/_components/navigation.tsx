@@ -19,6 +19,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { DocumentList } from "./document-list";
+import { useSearch } from "@/hooks/use-search";
 import {
   Popover,
   PopoverTrigger,
