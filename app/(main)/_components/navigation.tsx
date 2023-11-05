@@ -20,25 +20,27 @@ import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { DocumentList } from "./document-list";
 import { useSearch } from "@/hooks/use-search";
+import { useSettings } from "@/hooks/use-settings";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
 import { TrashBox } from "./trash-box";
+
 export const Navigation = () => {
   const pathname = usePathname();
 
   //not using tailwind breakpoints here becuase they are hard to work with in this context
   const isMobile = useMediaQuery("(max-width: 768px)");
-
   const create = useMutation(api.documents.create);
-
   const isResizingRef = useRef(false);
   const sidebarRef = useRef<ElementRef<"aside">>(null);
   const navbarRef = useRef<ElementRef<"div">>(null);
   const [isResetting, setIsResetting] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(isMobile);
+  const search = useSearch();
+  const settings = useSettings();
 
   useEffect(() => {
     if (isMobile) {
@@ -147,8 +149,8 @@ export const Navigation = () => {
         </div>
         <div>
           <UserItem />
-          <Item label="Search" icon={Search} isSearch onClick={() => {}} />
-          <Item label="Search" icon={Settings} onClick={() => {}} />
+          <Item label="Search" icon={Search} isSearch onClick={search.onOpen} />
+          <Item label="Search" icon={Settings} onClick={settings.onOpen} />
           <Item onClick={handleCreate} label="New Page" icon={PlusCircle} />
         </div>
         <div className="mt-4">
@@ -157,7 +159,6 @@ export const Navigation = () => {
           <Popover>
             <PopoverTrigger className="w-full mt-4 ">
               <Item label="Trash" icon={Trash} />
-              
             </PopoverTrigger>
             <PopoverContent
               side={isMobile ? "bottom" : "right"}
@@ -167,7 +168,7 @@ export const Navigation = () => {
             </PopoverContent>
           </Popover>
         </div>
-        <div 
+        <div
           onMouseDown={handleMouseDown}
           onClick={resetWidth}
           className="opacity-0 group-hover/sidebar:opacity-100 transition cursor-ew-resize absolute h-full w-1 bg-primary/10 right-0 top-0 "
