@@ -41,6 +41,7 @@ export const archive = mutation({
         await recursiveArchive(child._id);
       }
     };
+    recursiveArchive(args.id);
     const document = await ctx.db.patch(args.id, {
       isArchived: true,
     });
@@ -125,6 +126,8 @@ export const getTrash = query({
       .filter((q) => q.eq(q.field("isArchived"), true))
       .order("desc")
       .collect();
+
+    return documents;
   },
 });
 
